@@ -1,7 +1,7 @@
 # https://github.com/cycfi/q/tree/master/q_io
 
-include/q_io
-src
+# include/q_io
+# src
 
 ###############################################################################
 #  Copyright (c) 2014-2021 Joel de Guzman. All rights reserved.
@@ -29,9 +29,23 @@ endif()
 # set(PORTAUDIO_LIBRARY portaudio_static)
 # set(PORTMIDI_LIBRARY portmidi)
 
+find_package(PortMidi 2.0.3 EXACT REQUIRED)
+if (PortMidi_FOUND)
+    message("PortMidi found")
+    message("include dir: ${PORTAUDIO_INCLUDE_DIR}")
+    message("link libraries: ${PORTAUDIO_LIBRARY}")
+else (PortMidi_FOUND)
+    message("PortMidi not found")
+endif()
 
-find_package(portmidi)
-find_package(portaudio)
+find_package(portaudio 19 EXACT REQUIRED)
+if (portaudio_FOUND)
+    message("portaudio found")
+    message("include dir: ${PORTMIDI_INCLUDE_DIR}")
+    message("link libraries: ${PORTMIDI_LIBRARY}")
+else (portaudio_FOUND)
+    message("portaudio not found")
+endif()
 
 add_library(libqio
    src/audio_file.cpp
@@ -44,8 +58,8 @@ add_library(libqio
 target_link_libraries(libqio
    libq
    cycfi::infra
-   portmidi # ${PORTMIDI_LIBRARY}
-   portaudio # ${PORTAUDIO_LIBRARY}
+   PortMidi::portmidi # ${PORTMIDI_LIBRARY}
+   portaudio_static # ${PORTAUDIO_LIBRARY}
 )
 
 if (APPLE)
@@ -58,8 +72,5 @@ if (APPLE)
 endif()
 
 target_include_directories(libqio
-   PRIVATE external/include/
-   PRIVATE ${PORTAUDIO_INCLUDE_DIR}
-   PRIVATE ${PORTMIDI_INCLUDE_DIR}
    PUBLIC include/
 )
